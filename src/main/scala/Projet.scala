@@ -2,8 +2,7 @@ package upmc.akka.leader
 
 import com.typesafe.config.ConfigFactory
 import akka.actor._
-
-case class Terminal (id:Int, ip:String, port:Int)
+import Terminal._
 
 object Projet {
 
@@ -25,7 +24,7 @@ object Projet {
           val id : Int = args(0).toInt
 
           if (id < 0 || id > 3) {
-               println ("Errur : <num> doit etre compris entre 0 et 3")
+               println ("Erreur : <num> doit etre compris entre 0 et 3")
                sys.exit(1)
           }
 
@@ -35,5 +34,4 @@ object Projet {
 
           node ! Start
      }
-
 }

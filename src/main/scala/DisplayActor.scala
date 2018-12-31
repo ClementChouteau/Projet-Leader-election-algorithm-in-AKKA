@@ -11,6 +11,5 @@ class DisplayActor extends Actor {
           case Message (content) => {
                println(content)
           }
-
      }
 }
