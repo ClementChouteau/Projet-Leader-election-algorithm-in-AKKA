@@ -109,27 +109,27 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 		// Messages venant des autres nodes : pour nous dire qui est encore en vie ou mort
 		// on met a jour la liste des nodes
 		case IsAlive (nodeId) => {
-			println("IsAlive " + nodeId)
+			//println("IsAlive " + nodeId)
 			val curDate = java.lang.System.currentTimeMillis()
 			datesForChecking.put(nodeId, curDate)
 		}
 
 		case IsAliveLeader (nodeId) => {
-			println("IsAliveLeader " + nodeId)
+			//println("IsAliveLeader " + nodeId)
 			isInElection = false // fin de l'élection
 			// on est leader => le plus petit gagne
 			if (leaderId == id) {
 				if (nodeId<id) {
 					leaderId = nodeId
 					status = new Passive()
-					println("The leader is : " + leaderId)
+					println("STATUS CHANGE : New leader elected " + leaderId)
 				}
 			}
 			// on n'est pas leader => on suit
 			else if (leaderId != nodeId) {
 				leaderId = nodeId
 				status = new Passive()
-				println("The leader is : " + leaderId)
+				//println("The leader is : " + leaderId)
 			}
 			val curDate = java.lang.System.currentTimeMillis()
 			lastDate = curDate
@@ -142,7 +142,7 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 			var curDate = java.lang.System.currentTimeMillis()
 			// leader supposé mort
 			if (!isInElection && curDate - lastDate >= checkerTime) {
-				println("PLEASE START ELECTION")
+				println("Leader dead, starting election ")
 				var nodesAlive : List[Int] = datesForChecking.collect {
 					case (nodeId, lastNodeDate)
 					if ((curDate - lastNodeDate) < checkerTime)
@@ -160,7 +160,7 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 
 		// lanncer l'élection avec les noeuds donnés
 		case Initiate (nodesAlive) => {
-			println("Initiate " + status)
+			//println("Initiate " + status)
 			if (status == Passive()) {
 				candPred = -1
 				candSucc = -1
@@ -173,7 +173,7 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 			println("ALG " + init + " " + status)
 			if (status == Passive()) {
 				status = new Dummy ()
-				println(id + " -> " + nextNode(nodesAlive) + " ALG " + init)
+				// println(id + " -> " + nextNode(nodesAlive) + " ALG " + init)
 				getActor (nextNode(nodesAlive)) ! ALG(nodesAlive, init)
 			}
 			if (status == Candidate()) {
@@ -191,9 +191,10 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 					}
 				}
 				else if (id == init) {
-					println("FOUND LEADER")
 					status = new Leader()
 					leaderId = id
+					println("STATUS CHANGE : leader now is " + id)
+
 				}
 			}
 		}
@@ -219,7 +220,7 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 				if (id == k) {
 					status = Leader()
 					leaderId = id
-					println("FOUND LEADER")
+					println("STATUS CHANGE : leader now is " + id)
 				}
 				else {
 					candPred = k
@@ -227,7 +228,7 @@ class Node (val id:Int, val terminaux:List[Terminal]) extends Actor {
 						if (k < id) {
 							status = new Waiting()
 							println(id + " -> " + k + " AVS " + id)
-							getActor (k) ! AVS(nodesAlive, id)
+							//getActor (k) ! AVS(nodesAlive, id)
 						}
 					}
 					else {
